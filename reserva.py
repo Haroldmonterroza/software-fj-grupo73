@@ -2,10 +2,12 @@
 # reserva.py
 # Responsable: Gilbert Andrés Rojas Jiménez
 # Clase Reserva: une un cliente con un servicio y una duración.
+# Los errores NO se anotan aquí en el log: se lanzan para que
+# main.py los registre una sola vez, en el except que los maneja.
 # ============================================================
 
 from excepciones import ReservaError, OperacionNoPermitidaError, ServicioNoDisponibleError
-from registro import registrar_evento, registrar_error
+from registro import registrar_evento
 
 
 class Reserva:
@@ -34,9 +36,8 @@ class Reserva:
         try:
             if self.estado != "Pendiente":
                 raise OperacionNoPermitidaError(f"No se puede confirmar una reserva {self.estado}")
-        except OperacionNoPermitidaError as e:
-            registrar_error(str(e))                    # se anota el error en el log
-            raise                                      # se vuelve a lanzar para que main lo vea
+        except OperacionNoPermitidaError:
+            raise                                      # se lanza a main.py, que lo registra una sola vez
         else:
             # el else solo se ejecuta si NO hubo error
             self.estado = "Confirmada"
@@ -45,12 +46,12 @@ class Reserva:
     # Cancelar la reserva
     def cancelar(self):
         if self.estado == "Cancelada":
-            registrar_error("Se intentó cancelar una reserva ya cancelada")
             raise OperacionNoPermitidaError("La reserva ya estaba cancelada")
         self.estado = "Cancelada"
         registrar_evento(f"Reserva cancelada para {self.cliente.obtener_nombre()}")
 
-    # Procesar la reserva: calcula el costo final  (try / except / finally)
+    # Procesar la reserva: calcula el costo final  (try / finally)
+    # Si hay un error, sube a main.py; el finally se ejecuta igual
     def procesar(self, impuesto=None, descuento=None):
         try:
             if self.estado != "Confirmada":
@@ -58,9 +59,6 @@ class Reserva:
             costo = self.servicio.calcular_costo(self.horas, impuesto, descuento)
             registrar_evento(f"Reserva procesada: {self.servicio.nombre} - ${costo}")
             return costo
-        except ReservaError as e:
-            registrar_error(str(e))
-            raise
         finally:
             # el finally se ejecuta SIEMPRE, haya error o no
             print("   (Proceso de la reserva terminado)")
