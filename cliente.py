@@ -5,7 +5,7 @@
 # ============================================================
 
 from abc import ABC, abstractmethod             # para crear clases abstractas
-from excepciones import ClienteInvalidoError    # nuestro error personalizado
+from excepciones import ClienteInvalidoError, ParametroFaltanteError    # nuestros errores personalizados
 
 
 # ------------------------------------------------------------
@@ -33,13 +33,23 @@ class EntidadBase(ABC):
 # ------------------------------------------------------------
 class Cliente(EntidadBase):
 
-    def __init__(self, codigo, nombre, correo, telefono):
+    # Los parámetros tienen None por defecto para poder detectar
+    # cuándo falta alguno y avisar con un error claro
+    def __init__(self, codigo, nombre=None, correo=None, telefono=None):
         super().__init__(codigo)               # llama al constructor del padre
+        self.__verificar_parametros(nombre, correo, telefono)
         self.__nombre = self.__validar_nombre(nombre)
         self.__correo = self.__validar_correo(correo)
         self.__telefono = self.__validar_telefono(telefono)
 
     # ---- Validaciones (métodos privados) ----
+    def __verificar_parametros(self, nombre, correo, telefono):
+        # Se revisa que no falte ningún dato obligatorio
+        datos = {"nombre": nombre, "correo": correo, "teléfono": telefono}
+        for campo, valor in datos.items():
+            if valor is None:
+                raise ParametroFaltanteError(f"Falta el parámetro '{campo}' del cliente")
+
     def __validar_nombre(self, nombre):
         if not nombre or nombre.strip() == "":         # vacío o solo espacios
             raise ClienteInvalidoError("El nombre del cliente no puede estar vacío")

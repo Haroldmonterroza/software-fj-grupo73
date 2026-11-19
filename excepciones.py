@@ -36,3 +36,15 @@ class ReservaError(SoftwareFJError):
 # (por ejemplo, cancelar una reserva ya cancelada)
 class OperacionNoPermitidaError(SoftwareFJError):
     pass
+
+
+# Error cuando falta un dato obligatorio al crear un objeto
+# (por ejemplo, registrar un cliente sin teléfono)
+class ParametroFaltanteError(SoftwareFJError):
+    pass
+
+
+# Error cuando un cálculo daría un resultado imposible
+# (por ejemplo, un descuento mayor al 100 % o un costo negativo)
+class CalculoInconsistenteError(SoftwareFJError):
+    pass
