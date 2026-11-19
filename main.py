@@ -4,8 +4,12 @@
 # Sistema de Gestión de Clientes, Servicios y Reservas
 # Empresa: Software FJ - UNAD, Programación 213023, Grupo 73
 #
-# Simula 12 operaciones, unas correctas y otras con errores,
+# Simula 14 operaciones, unas correctas y otras con errores,
 # para demostrar que el sistema NO se cierra ante los errores.
+# Cada error se registra UNA sola vez en eventos.log, aquí en el
+# except que lo maneja. Se prueban los 6 tipos de error del Anexo 3:
+# datos inválidos, parámetros faltantes, operaciones no permitidas,
+# reservas incorrectas, servicios no disponibles y cálculos inconsistentes.
 # ============================================================
 
 from datetime import datetime
@@ -160,6 +164,27 @@ try:
     print("   OK: primera cancelación ->", r1.describir())
     r1.cancelar()                          # esta segunda vez debe fallar
 except SoftwareFJError as e:
+    registrar_error(str(e))
+    print("   ERROR:", e)
+
+
+# ---------- Operación 13: cliente con un parámetro faltante ----------
+print("\n13. Registrar cliente sin teléfono (parámetro faltante)")
+try:
+    c4 = Cliente("C04", "Pedro Ruiz", "pedro@gmail.com")   # no se envía el teléfono
+    clientes.append(c4)
+except SoftwareFJError as e:
+    registrar_error(str(e))
+    print("   ERROR:", e)
+
+
+# ---------- Operación 14: cálculo inconsistente ----------
+print("\n14. Calcular un costo con descuento del 150% (cálculo inconsistente)")
+try:
+    costo = equipo.calcular_costo(2, descuento=1.5)
+    print("   Costo:", costo)
+except SoftwareFJError as e:
+    registrar_error(str(e))
     print("   ERROR:", e)
 
 

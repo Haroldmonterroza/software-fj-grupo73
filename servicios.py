@@ -6,7 +6,7 @@
 # ============================================================
 
 from abc import ABC, abstractmethod
-from excepciones import ServicioInvalidoError, ServicioNoDisponibleError
+from excepciones import ServicioInvalidoError, ServicioNoDisponibleError, CalculoInconsistenteError
 
 
 # ------------------------------------------------------------
@@ -26,11 +26,18 @@ class Servicio(ABC):
     #   calcular_costo(horas, impuesto=0.19)      -> con impuesto
     #   calcular_costo(horas, descuento=0.10)     -> con descuento
     def calcular_costo(self, horas, impuesto=None, descuento=None):
+        # Se revisa que los porcentajes tengan sentido antes de calcular
+        if descuento is not None and not (0 <= descuento <= 1):
+            raise CalculoInconsistenteError(f"El descuento {descuento * 100:g}% no es válido (debe estar entre 0% y 100%)")
+        if impuesto is not None and impuesto < 0:
+            raise CalculoInconsistenteError(f"El impuesto {impuesto * 100:g}% no puede ser negativo")
         costo = self.costo_base(horas)                 # cada servicio calcula su base
         if descuento is not None:
             costo = costo - costo * descuento          # se resta el descuento
         if impuesto is not None:
             costo = costo + costo * impuesto           # se suma el impuesto
+        if costo < 0:                                  # un costo nunca puede ser negativo
+            raise CalculoInconsistenteError(f"El costo calculado (${costo}) es negativo")
         return round(costo, 2)
 
     # Revisa que el servicio se pueda usar
