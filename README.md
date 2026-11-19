@@ -22,6 +22,13 @@ Sistema orientado a objetos, sin base de datos, que gestiona clientes, servicios
 - **Excepciones:** excepciones personalizadas, `try/except`, `try/except/else`, `try/except/finally` y encadenamiento con `raise ... from`.
 - **Logs:** todos los eventos y errores se guardan en `eventos.log`.
 
+## Mejoras aplicadas según la retroalimentación del tutor
+
+- Cada error se registra **una sola vez** en `eventos.log`, en el bloque `except` de `main.py` que lo maneja.
+- Se agregaron las excepciones `ParametroFaltanteError` y `CalculoInconsistenteError`.
+- `main.py` simula **14 operaciones** que cubren los 6 tipos de error del Anexo 3: datos inválidos, parámetros faltantes, operaciones no permitidas, reservas incorrectas, servicios no disponibles y cálculos inconsistentes.
+- Se agregó `.gitignore` para no subir `eventos.log` ni `__pycache__`.
+
 ## Cómo ejecutarlo
 
 1. Tener Python 3.9 o superior.

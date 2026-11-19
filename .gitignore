@@ -1,0 +1,4 @@
+# Archivos que se generan al ejecutar el programa: no se suben al repositorio
+eventos.log
+__pycache__/
+*.pyc
